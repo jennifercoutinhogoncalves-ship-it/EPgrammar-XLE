@@ -1,0 +1,190 @@
+# Master's Thesis
+# European Portuguese Grammar with Pro-Drop implementation
+# Author: Jennifer Coutinho Goncalves
+# Date: 28.08.2025
+
+# sentences that should work
+
+
+# null-subject
+
+Bebo café. (1 0.014 10)
+
+Comemos uma tangerina. (1 0.004 12)
+
+Prepararam a festa. (1 0.003 12)
+
+Disseste que esteve em casa. (1 0.004 38)
+
+
+# intransitive verbs
+
+Ela dorme. (1 0.003 10)
+
+Eles crescem.  (1 0.002 10)
+
+
+# transitive verb
+
+Eu bebo café. (1 0.002 13)
+
+O gato come a sopa.  (1 0.002 17)
+
+
+# ditransitive verbs
+
+Ela deu a carta à professora. (1 0.003 29)
+
+Ele deu a carta ao Eduardo. (1 0.003 28)
+
+Dei um livro às amigas.  (1 0.003 26)
+
+
+# copular verbs
+
+O gato é pequeno. (1 0.002 15)
+
+As meninas são pequenas. (1 0.002 15)
+
+Ela esteve em casa.  (1 0.003 23)
+
+
+# embedding verbs
+
+O João disse que a Maria dorme. (1 0.004 27)
+
+Ela pensa que ele comeu o bolo. (1 0.003 26)
+
+
+# adjectives
+
+O pequeno gato dorme. (1 0.002 15)
+
+O gato pequeno dorme.  (1 0.002 15)
+
+
+# adverbs 
+
+Ela rapidamente e cuidadosamente decorou a sala. (1 0.003 24)
+
+Prepararam rapidamente o jantar. (1 0.002 15)
+
+
+# possessives 
+
+O meu irmão come. (1 0.002 14)
+
+As minhas tangerinas crescem no jardim. (1 0.003 23)
+
+
+# prepositions 
+
+Ela comeu um gelado no parque.  (1+1 0.003 30)
+
+O pão foi comido por ela. (2 0.003 25)
+
+
+# conjunctions 
+
+O João e ela comem no Eduardo.   (1 0.004 26)
+
+Ela fala mas come rapidamente. (2+1 0.004 38)
+
+
+# imperative
+
+Fecha a porta! (1 0.002 12)
+
+Espera! (1 0.002 7)
+
+Falem com o professor! (1 0.002 16)
+
+
+# passive 
+
+A carta foi escrita lentamente por ela na sala. (2 0.005 38)
+
+Um pequeno gato foi perseguido por um rato. (1 0.003 28)
+
+
+# negation
+
+Não como bolo. (1 0.002 12)
+
+A professora não esteve em casa. (1 0.003 29)
+
+
+# sentences that should not work 
+
+# subject-verb agreement violation (consistency)
+# specifically in the context of imperatives
+# subject 'you' is implied
+# verb should be in 2 person form, e.g. fala, come
+
+Espero! (0 0.002 4)
+
+Comemos os teus legumes! (0 0.002 0)
+
+
+# unification failure, subject-verb agreement (consistency)
+
+Eu comes uma tangerina.  (0 0.002 12)
+
+Nós falem do Eduardo. (0 0.002 0)
+
+Os gatos come.  (0 0.003 9)
+
+
+# article agreement violation (consistency)
+
+Ela come uma bolo.  (0 0.002 9)
+
+A João dorme. (0 0.002 5)
+
+
+# preposition agreement violation (consistency)
+
+Tu comes a tangerina no jardims. (0 0.002 18)
+
+Ela deu a carta para Eduardo. (0 0.003 16)
+
+O Diogo espera pela treino. (0 0.002 17)
+
+
+# possesive pronoun agreement (consistency) 
+
+A minha irmão come.  (0 0.002 6)
+
+As meus tangerinas crescem no jardim. (0 0.002 4)
+
+
+# article required for proper nouns (names)
+
+A Maria e Diogo preparam a comida.   (0 0.002 10)
+
+Maria comeu uma tangerina. (0 0.002 2)
+
+
+# adjective agreement violation (consistency)
+
+Eu como as tangerinas pequenos. (0 0.002 12)
+
+O gato preta come as tangerinas. (0 0.002 7)
+
+
+# missing PRED value, completeness violation
+
+Ela fecha. (0 0.002 10)
+
+Ele deu a carta.  (0 0.002 15)
+
+
+
+
+
+
+
+
+
+
+# 51 sentences, 0.139 CPU secs total, 0.014 CPU secs max (08/22/25)

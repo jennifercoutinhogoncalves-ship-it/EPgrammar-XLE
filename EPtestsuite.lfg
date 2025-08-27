@@ -1,0 +1,189 @@
+# Master's Thesis
+# European Portuguese Grammar with Pro-Drop implementation
+# Author: Jennifer Coutinho Goncalves
+# Date: 28.08.2025
+
+# sentences that should work
+
+
+# null-subject
+
+Bebo café.
+
+Comemos uma tangerina.
+
+Prepararam a festa.
+
+Disseste que esteve em casa.
+
+
+# intransitive verbs
+
+Ela dorme.
+
+Eles crescem. 
+
+
+# transitive verb
+
+Eu bebo café.
+
+O gato come a sopa. 
+
+
+# ditransitive verbs
+
+Ela deu a carta à professora.
+
+Ele deu a carta ao Eduardo.
+
+Dei um livro às amigas. 
+
+
+# copular verbs
+
+O gato é pequeno.
+
+As meninas são pequenas.
+
+Ela esteve em casa. 
+
+
+# embedding verbs
+
+O João disse que a Maria dorme.
+
+Ela pensa que ele comeu o bolo.
+
+
+# adjectives
+
+O pequeno gato dorme.
+
+O gato pequeno dorme. 
+
+
+# adverbs 
+
+Ela rapidamente e cuidadosamente decorou a sala.
+
+Prepararam rapidamente o jantar.
+
+
+# possessives 
+
+O meu irmão come.
+
+As minhas tangerinas crescem no jardim.
+
+
+# prepositions 
+
+Ela comeu um gelado no parque. 
+
+O pão foi comido por ela.
+
+
+# conjunctions 
+
+O João e ela comem no Eduardo.  
+
+Ela fala mas come rapidamente.
+
+
+# imperative
+
+Fecha a porta!
+
+Espera!
+
+Falem com o professor!
+
+
+# passive 
+
+A carta foi escrita lentamente por ela na sala.
+
+Um pequeno gato foi perseguido por um rato.
+
+
+# negation
+
+Não como bolo.
+
+A professora não esteve em casa.
+
+
+# sentences that should not work 
+
+# subject-verb agreement violation (consistency)
+# specifically in the context of imperatives
+# subject 'you' is implied
+# verb should be in 2 person form, e.g. fala, come
+
+Espero!
+
+Comemos os teus legumes!
+
+
+# unification failure, subject-verb agreement (consistency)
+
+Eu comes uma tangerina. 
+
+Nós falem do Eduardo.
+
+Os gatos come. 
+
+
+# article agreement violation (consistency)
+
+Ela come uma bolo. 
+
+A João dorme.
+
+
+# preposition agreement violation (consistency)
+
+Tu comes a tangerina no jardims.
+
+Ela deu a carta para Eduardo.
+
+O Diogo espera pela treino.
+
+
+# possesive pronoun agreement (consistency) 
+
+A minha irmão come. 
+
+As meus tangerinas crescem no jardim.
+
+
+# article required for proper nouns (names)
+
+A Maria e Diogo preparam a comida.  
+
+Maria comeu uma tangerina.
+
+
+# adjective agreement violation (consistency)
+
+Eu como as tangerinas pequenos.
+
+O gato preta come as tangerinas.
+
+
+# missing PRED value, completeness violation
+
+Ela fecha.
+
+Ele deu a carta. 
+
+
+
+
+
+
+
+
+
+

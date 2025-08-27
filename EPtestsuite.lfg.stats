@@ -1,0 +1,76 @@
+((1) (1 0.014 10) (2 words))
+((2) (1 0.004 12) (3 words))
+((3) (1 0.003 12) (3 words))
+((4) (1 0.004 38) (5 words))
+((5) (1 0.003 10) (2 words))
+((6) (1 0.002 10) (2 words))
+((7) (1 0.002 13) (3 words))
+((8) (1 0.002 17) (5 words))
+((9) (1 0.003 29) (6 words))
+((10) (1 0.003 28) (6 words))
+((11) (1 0.003 26) (5 words))
+((12) (1 0.002 15) (4 words))
+((13) (1 0.002 15) (4 words))
+((14) (1 0.003 23) (4 words))
+((15) (1 0.004 27) (7 words))
+((16) (1 0.003 26) (7 words))
+((17) (1 0.002 15) (4 words))
+((18) (1 0.002 15) (4 words))
+((19) (1 0.003 24) (7 words))
+((20) (1 0.002 15) (4 words))
+((21) (1 0.002 14) (4 words))
+((22) (1 0.003 23) (6 words))
+((23) (1+1 0.003 30) (6 words))
+((24) (2 0.003 25) (6 words))
+((25) (1 0.004 26) (7 words))
+((26) (2+1 0.004 38) (5 words))
+((27) (1 0.002 12) (3 words))
+((28) (1 0.002 7) (1 word))
+((29) (1 0.002 16) (4 words))
+((30) (2 0.005 38) (9 words))
+((31) (1 0.003 28) (8 words))
+((32) (1 0.002 12) (3 words))
+((33) (1 0.003 29) (6 words))
+((34) (0 0.002 4) (1 word))
+((35) (0 0.002 0) (4 words))
+((36) (0 0.002 12) (4 words))
+((37) (0 0.002 0) (4 words))
+((38) (0 0.003 9) (3 words))
+((39) (0 0.002 9) (4 words))
+((40) (0 0.002 5) (3 words))
+((41) (0 0.002 18) (6 words))
+((42) (0 0.003 16) (6 words))
+((43) (0 0.002 17) (5 words))
+((44) (0 0.002 6) (4 words))
+((45) (0 0.002 4) (6 words))
+((46) (0 0.002 10) (7 words))
+((47) (0 0.002 2) (4 words))
+((48) (0 0.002 12) (5 words))
+((49) (0 0.002 7) (6 words))
+((50) (0 0.002 10) (2 words))
+((51) (0 0.002 15) (4 words))
+
+XLE release of Sep 25, 2017 21:02.
+Grammar = /Users/jennifergoncalves/Desktop/EPgrammar/EPgrammar.lfg.
+Grammar last modified on Aug 21, 2025 12:23.
+Host machine is jennifers-air.lan.
+51 sentences, 0 errors, 0 mismatches
+18 sentences had 0 parses
+33 good sentences
+30 sentences had exactly one grammatical parse
+timeout = 100
+max_xle_scratch_storage = 100 MB
+prune_subtree_location = 1
+max_new_events_per_graph_when_skimming = 500
+maximum raw subtrees per sentence = 107 (#30)
+maximum event count per sentence = 4588
+average event count per graph = 53.910
+tokens = 6.4%, morph = 7.0%, multiword = 0.3%, lex = 15.3%, chart = 33.2%,
+unifier = 30.7%, completer = 2.8%, solver = 4.5%, output = 0.0%
+max_alloc_mem = 390.83 MB
+0.139 CPU secs total, 0.014 CPU secs max
+elapsed time = 0 seconds
+  range parsed failed  words   seconds  subtrees     optimal
+   1-10     33     18   4.70     0.003     20.55        1.09
+    all     33     18   4.70     0.003     20.55        1.09
+0.00 of the variance in seconds is explained by the number of subtrees

@@ -1,0 +1,1180 @@
+"Master's Thesis"
+"European Portuguese Grammar with Pro-Drop implementation"
+"Author: Jennifer Coutinho Goncalves"
+"Date: 28.08.2025"
+
+DEMO   PORTUGUESE   CONFIG (1.0)
+  ROOTCAT ROOT.  
+  FILES common.templates.lfg. 
+  LEXENTRIES (DEMO PORTUGUESE).
+  TEMPLATES (DEMO PORTUGUESE) (STANDARD COMMON). 
+  RULES (DEMO PORTUGUESE).
+  GOVERNABLERELATIONS SUBJ OBJ OBJ2 COMP XCOMP OBL OBL-?+.
+  SEMANTICFUNCTIONS ADJUNCT  TOPIC FOCUS POSS STANDARD.
+  NONDISTRIBUTIVES NUM PERS COORD-FORM.
+  EPSILON e.
+  OPTIMALITYORDER NOGOOD PPadj +PPattach +sg-imp +cat +NullSubj +Advattach +APattach.
+  GENOPTIMALITYORDER GenBadPunct NOGOOD +Punct.
+
+----
+
+DEMO   PORTUGUESE   RULES (1.0)
+
+"RULES"
+
+ROOT --> { S (PERIOD: @(OT-MARK PUNCT)) | Simp }.	"allow imperatives as well"
+
+Simp --> e: (^ SUBJ PRED) = 'pro'	       		"allow only imperative verbforms"
+     	    (^ SUBJ PERS) = 2
+       	    (^ MOOD) = imperative;	
+ 	 VP
+ 	 EXCL.						"obligatory EXCL. for imperatives"
+
+
+S --> { NP: (^ SUBJ) = !
+	    (! CASE) = nom
+      | e: (^ SUBJ PRED) = 'pro'			"allow null-subject as well"	
+      	   @(OT-MARK NullSubj) }			"prefer null-subject"
+      	VP: (^ TNS-ASP TENSE). 				"require that sentences have tense"
+
+VP --> { VPmain | VPcop | VPemb }.			"VP covering three subtypes: main, copular and embedding verbs"
+
+
+VPmain --> (NEG: ! $ (^ ADJUNCT))			"allow negation as adjunct"
+       	   (AUX)     					"auxilary for passives"
+       	   AdvP*
+      	   V: ^=!;
+       	   AdvP*: @(OT-MARK Advattach);			"prefer AdvPs after the verb (typical position)"		
+       	   (NP: (^ OBJ) = !				"direct OBJ"
+	   	(! CASE) = acc)
+       	   PP*: { ! $ (^ ADJUNCT) 			"PPs can be all types of ADJUNCTS"
+              	  (! PTYPE) =c sem 
+             	| (^ OBL) = ! };
+	   (PP: (^ OBL-TO) = !				"special oblique for ditransitives"
+	        (! PTYPE) =c nosem). 			"have to be preposition a (nosem)"
+ 
+
+VPcop --> (NEG: ! $ (^ ADJUNCT))			
+          (AUX)
+          AdvP*
+          V: ^=!
+	     (! VTYPE) =c copular;			"have to be copular verbs"
+          AdvP*: @(OT-MARK Advattach);
+        { (NP: (^ PREDLINK) = !)			"link complement via predlink"
+	| (AP: (^ PREDLINK) = !
+	       (^ PREDLINK NUM) =c (^ SUBJ NUM)		"agreement"
+	       (^ PREDLINK GEN) =c (^ SUBJ GEN))
+	| (PP: (^ PREDLINK) = !) }		
+          PP*: { ! $ (^ ADJUNCT)
+                 (! PFORM) =c sem 
+               | (^ OBL) = ! }.
+
+
+VPemb --> (NEG: ! $ (^ ADJUNCT))
+          (AUX)
+          AdvP*
+          V: ^=!
+	     (! VTYPE) =c embedding;			"have to be embedding verbs"
+          AdvP*: @(OT-MARK Advattach);
+          CP: (^ COMP) = !;				"embedded clause as complement"
+          PP*: { ! $ (^ ADJUNCT)
+	       	 (! PTYPE) =c sem
+               | (^ OBL) = ! }. 
+
+CP --> 	  C
+	  S.
+
+
+
+NP --> { { (D)						"optional DET"
+	 | (D						"obilgatory DET followed by poss"
+	   PRON: (^ PRON ) = !				"allow possessive pronouns"
+	     	 (! PRON-TYPE) =c poss			"have to be poss"						
+	     	 (^ NUM) = (! NUM)			"poss agreement"
+	     	 (^ GEN) = (! GEN)) }	
+ 	    AP*: ! $ (^ ADJUNCT)
+	    	 (^ NUM) = (! NUM)			"adjective agreement" 
+	    	 (^ GEN) = (! GEN);
+ 	    { N: (^ NTYPE) = count			"head of NP"
+	    | { D   	     				"obligatory DET followed by name"      
+	      	N: (^ NTYPE) =c name    		"have to be name"
+		 | P 	     				"preposition followed by name"      
+		   N: (^ NTYPE) = name}}
+	    AP*: ! $ (^ ADJUNCT)
+	    	 (^ NUM) = (! NUM)			"adjective agreement" 
+	    	 (^ GEN) = (! GEN)
+		 @(OT-MARK APattach);			"prefer APs after the noun (typical position)"
+ 	    PP*: ! $ (^ ADJUNCT)	 
+		 (! PTYPE) =c sem			"have to be semantic"
+		 @(OT-MARK PPattach)	 		"prefer PPs attached to NPs"   
+ 	  | PRON }. 
+
+
+AP --> ADV*: ! $ (^ ADJUNCT);
+       A
+       (COMMA).
+
+
+AdvP --> ADV: ! $ (^ ADJUNCT);
+   	 (COMMA).
+	    
+
+PP --> { P: ^ = !					"head of PP"
+            (! PTYPE) =c sem; 				"semantic type, ADJUNCT"
+    	 NP: (^ OBJ) = !
+     	     ! (^ NUM) = (^ OBJ NUM)			"preposition agreement"		
+     	     ! (^ GEN) = (^ OBJ GEN)
+    	|  P: ^ = !  
+            (! PTYPE) =c nosem;				"non-semantic type, OBL"
+            NP: ^ = !     	 			"direct OBJ"
+	|  P: ^ = !
+	      (! PTYPE) =c nosem
+	      (! PFORM) =c a;
+	   N: ^ = !
+	      (^ NTYPE) = name
+	}.
+
+
+
+METARULEMACRO(_CAT _BASECAT _RHS) = "applies to all rules in the grammar"
+
+    { "just use the rule as stated"
+      "don't do anything to it; ALWAYS include this option"
+
+      _RHS
+
+     |"if it is an NP or an N, pass it to the NP
+      coordination rule"
+      "COM{EX RULE NP: the girl and the boy}"
+
+      e: _CAT $c { NP N };
+      @(NPCOORD _CAT)
+
+     |"if it is any other category, pass it to
+      the same category coordination rule"
+      "COM{EX RULE S: the girl sleeps and walks.}"
+      "COM{EX RULE PP: with the girl and in the park}"
+
+      e: _CAT ~$ { NP N };
+      @(SCCOORD _CAT)
+      }.
+      
+
+"COORDINATION RULES"
+
+NPCOORD(_CAT) = "coordination of nominals"
+   "COM{EX RULE NP: girls and boys}"
+   "This differs from SCCOORD in that the conjunction provides NUM pl to
+   the resulting coordinated f-structure and the person features are
+   resolved for the noun phrase."
+
+   _CAT: @IN-SET  "first nominal"
+         @NP-CONJUNCT; "calls person resolution template"
+
+   CONJnp: @PUSHUP; "conjunction"
+           "PUSHUP avoids vacuous ambiguity in constructions like:
+            COM{EX RULES NP: girls and boys}"
+
+   _CAT: @IN-SET "second nominal"
+         @NP-CONJUNCT.
+
+SCCOORD(_CAT) = "coordination of non-nominals"
+  "COM{EX RULES PP: with girls and with boys}"
+  "COM{EX RULES S: girls sleep and boys sleep.}"
+  "no features other than a COORD-FORM are provided to the coordinated
+  f-structure."
+
+   _CAT: @IN-SET; "first constituent"
+   (COMMA: @(OT-MARK GenBadPunct)) "optional comma; 
+                                    disprefered in generation"
+                       "COM{EX RULES S: girls sleep, and boys sleep.}"
+
+   CONJ: @PUSHUP; "conjunction"
+         "PUSHUP avoids vacuous ambiguity in constructions like:
+         COM{EX RULES S: boys walk and sleep.}" 
+
+   _CAT: @IN-SET "second constituent".
+
+
+----
+DEMO   PORTUGUESE    TEMPLATES (1.0)
+
+"TEMPLATES"
+
+NP-CONJUNCT = "called by the NP coordination rule to get the number"
+	  "person, and case correct"
+	  "COM{EX TEMPLATE NP: a cat and a dog}"
+	  
+	  { (! PERS)=c 1 "if any conjunct is first person,"
+	    @(PERS 1) "the whole NP is first person"
+	    
+	   |(! PERS)=c 2 "if any conjunct is second person,"
+	    { (^ PERS)=c 1 "the whole NP is second person"
+	     |(^ PERS)=2} "unless there was a first person conjunct"
+	    
+	   |(! PERS)=c 3
+	    { (^ PERS)=c 1
+	     |(^ PERS)=c 2
+	     |@(PERS 3)}} "third person if both conjuncts are"
+	  
+	  { (! NUM)=c pl "if have plural conjunct, whole NP is plural"
+	    @(NUM pl) 
+           |(! NUM)=c sg }
+	    "number with singular depends on conjunction (e.g., and vs. or)".
+
+
+OT-MARK(_mark) = _mark $ o::*.    	  "assigns an OT mark, from common templates"
+
+PASS(FRAME) = { FRAME  	 	 	  "no passive, just give back subcat frame"
+	        (^ PASSIVE) = -     	  "no passive"
+	      | FRAME			  "passive"
+	      	(^ PASSIVE) = +		  "mark as such"
+	    	(^ PARTICIPLE) =c past	  "make sure to have a PASTP"
+	    	(^ OBJ)-->(^ SUBJ) 	  "OBJ goes to SUBJ"
+	       { (^ SUBJ)-->(^ OBL-AG) 	  "either make SUBJ OBL-AG"
+	      |  (^ SUBJ)--> NULL 	  "or delete"
+	        }
+	       }. 
+
+DAT-SHIFT(SCHEMATA) = { SCHEMATA 
+	                | SCHEMATA 
+	                  (^ OBJ)-->(^ OBJ2)
+	                  (^ OBL-TO)-->(^ OBJ)
+		       }.
+
+PRED(P) = (^ PRED) = 'P'. 
+
+TENSE(T) = (^ TENSE) = T.  
+
+CASE(C) = (^ CASE) = C.   
+
+MOOD(M) = (^ MOOD) = M.
+
+DEF = (^ DEF).
+
+
+INTRANS(P) = (^ PRED) = 'P<(^SUBJ)>'.
+
+TRANS(P) = @(PASS (^ PRED)='P<(^ SUBJ) (^ OBJ)>').
+
+OPT-TRANS(P) = {@(TRANS P)| @(INTRANS P)}.			
+
+DITRANS(P) = @(PASS @(DAT-SHIFT (^ PRED)='P<(^ SUBJ) (^ OBJ) (^ OBL-TO)>')).
+
+VPRES = @(TENSE pres)				
+	@(MOOD indicative).					
+
+VPAST = @(TENSE past) 
+	@(MOOD indicative). 
+
+VERB-AGR(P N) = (^ SUBJ PERS) = P		"verb agreement"
+	      	(^ SUBJ NUM) = N.
+
+VERB-FORM-1SG = @(VERB-AGR 1 sg).
+
+VERB-FORM-2SG = @(VERB-AGR 2 sg).
+
+VERB-FORM-3SG = @(VERB-AGR 3 sg).		
+
+VERB-FORM-1PL = @(VERB-AGR 1 pl).
+
+VERB-FORM-2PL = @(VERB-AGR 2 pl).
+
+VERB-FORM-3PL = @(VERB-AGR 3 pl).
+
+
+VIMP(N) = (^ SUBJ PERS) = 2			"imperatives"
+       	  (^ SUBJ NUM) = N
+       	  (^ MOOD) = imperative.
+
+PASTP = (^ PARTICIPLE) = past.
+
+PASTP-AGR(N G) = (^ SUBJ NUM) = N		"participle agreement"
+	       	 (^ SUBJ GEN) = G.
+
+
+
+COUNT-NOUN(P N G) = @(PRED P)			"nouns"
+	             (^ NUM) = N
+		     (^ GEN) = G	
+	             (^ PERS) = 3
+	             (^ NTYPE) = count.
+
+
+PRON(Z N T) = (^ PRED) = 'pro'			"pronouns"			
+	      (^ NUM) = N
+	      (^ PERS) = Z
+	      (^ PRON-TYPE) = T.
+
+
+PRON-POSS(Z N G) = (^ PRED) = 'pro'		"possessives"
+	      	   (^ PERS) = Z
+	      	   (^ NUM) = N                   
+    		   (^ GEN) = G                   
+    		   (^ PRON-TYPE) = poss. 
+    
+NAME(P) = @(PRED P)				"names"
+	   (^ NUM) = sg
+	   (^ PERS) = 3
+	   (^ NTYPE) = name.
+
+
+PREP(P) = { (^ PRED) = 'P<(^OBJ)>'		"prepositions" 
+	    (^ PTYPE) = sem
+	  | (^ PTYPE) = nosem
+	    (^ PFORM) = P }.
+
+
+COPULAR(P) = (^ PRED) = 'P<(^ SUBJ)(^ PREDLINK)>'  "copular verbs"
+	     (^ VTYPE) = copular.
+
+EMBEDDING(P) = (^ PRED) = 'P<(^ SUBJ)(^ COMP)>'	   "embedding verbs"
+	       (^ VTYPE) = embedding.
+	       
+	
+----
+
+DEMO PORTUGUESE  LEXICON (1.0)
+
+"PERSONAL PRONOUNS"
+
+Eu      PRON * @(PRON 1 sg pers).						"I"					
+
+eu      PRON * @(PRON 1 sg pers).
+
+Tu      PRON * @(PRON 2 sg pers).						"you"						
+
+tu      PRON * @(PRON 2 sg pers).
+
+Ele     PRON * @(PRON 3 sg pers)						"he"
+	        (^ GEN) = masc.				
+
+ele     PRON * @(PRON 3 sg pers)
+	        (^ GEN) = masc.
+
+Ela     PRON * @(PRON 3 sg pers)						"she"
+		(^ GEN) = fem.						
+
+ela     PRON * @(PRON 3 sg pers)
+	       	(^ GEN) = fem.
+
+Você    PRON * @(PRON 3 sg pers).						"you (formal)"
+
+você    PRON * @(PRON 3 sg pers).
+
+Nós     PRON * @(PRON 1 pl pers).						"we"
+
+nós     PRON * @(PRON 1 pl pers).
+
+Vocês   PRON * @(PRON 3 pl pers).						"you (plural informal/formal)"
+
+vocês   PRON * @(PRON 3 pl pers).					
+
+Eles    PRON * @(PRON 3 pl pers)						"they (masc)"
+	       	(^ GEN) = masc.  				
+
+eles    PRON * @(PRON 3 pl pers)
+	        (^ GEN) = masc.
+
+Elas    PRON * @(PRON 3 pl pers)						"they (fem)"
+                (^ GEN) = fem.						
+
+elas    PRON * @(PRON 3 pl pers)
+	        (^ GEN) = fem.   
+
+
+"POSSESIVE PRONOUNS"
+
+meu 	PRON * @(PRON-POSS 1 sg masc).						"my (sg + masc)"				
+
+minha 	PRON * @(PRON-POSS 1 sg fem). 						"my (sg + fem)"				
+
+meus  	PRON * @(PRON-POSS 1 pl masc). 						"my (pl + masc)"				
+
+minhas 	PRON * @(PRON-POSS 1 pl fem).						"my (pl + fem)"
+
+
+"VERBS"
+
+adormeceu      V * @(OPT-TRANS adormecer)					"to fall asleep"			
+      	 	   @VERB-FORM-3SG
+	  	   @VPAST.							
+
+como   	        V * @(OPT-TRANS comer)						"eat"
+               	    @VERB-FORM-1SG
+		    @VPRES.
+
+comes		V * @(OPT-TRANS comer)
+      	   	    @VERB-FORM-2SG
+		    @VPRES.
+
+come		V * @(OPT-TRANS comer)
+           	    { @VERB-FORM-3SG
+	   	      @VPRES
+		    | @(VIMP sg) }.						
+
+comemos 	V * @(OPT-TRANS comer)
+            	    @VERB-FORM-1PL
+	    	    @VPAST.
+
+Comemos 	V * @(OPT-TRANS comer)
+            	    @VERB-FORM-1PL
+	    	    @VPAST.
+
+comem   	V * @(OPT-TRANS comer)
+            	    @(VERB-FORM-3PL)
+	            @VPRES.
+
+Comi 		V * @(OPT-TRANS comer)
+      	  	    @VERB-FORM-1SG
+	  	    @VPAST.
+
+comi    	V * @(OPT-TRANS comer)							
+      	    	    @VERB-FORM-1SG
+	    	    @VPAST.
+
+comeste 	V * @(OPT-TRANS comer)
+      	    	    @VERB-FORM-2SG
+	    	    @VPAST.
+
+comeu		V * @(OPT-TRANS comer)
+      	    	    @VERB-FORM-3SG
+	    	    @VPAST.
+
+comeram		V * @(OPT-TRANS comer)
+            	    @(VERB-FORM-3PL)			
+	    	    @VPAST.
+
+comido		V * { @(TRANS comer) | @(DITRANS comer)}					
+	    	    @PASTP
+	    	    @(PASTP-AGR sg masc).
+
+comida      	V * { @(TRANS comer) | @(DITRANS comer)}				
+	    	    @PASTP
+		    @(PASTP-AGR sg fem)
+		    @(OT-MARK cat);			"prefer this category"
+		N * @(COUNT-NOUN comida sg fem).				"food"
+
+comidos	    	V * { @(TRANS comer) | @(DITRANS comer)}
+	    	    @PASTP
+	    	    @(PASTP-AGR pl masc). 
+
+comidas     	V * { @(TRANS comer) | @(DITRANS comer)}					
+	    	    @PASTP
+	    	    @(PASTP-AGR pl fem)
+		    @(OT-MARK cat);			"prefer this category"
+		N * @(COUNT-NOUN comida pl fem).
+
+Fecha 		V * @(TRANS fechar)						"to close"
+      	  	    { @VERB-FORM-3SG
+	  	      @VPRES
+		    | @(VIMP sg) }.
+
+fecha 		V * @(TRANS fechar)
+      	  	    { @VERB-FORM-3SG
+	  	    @VPRES
+		    | @(VIMP sg) }.
+
+falam 		V * @(INTRANS falar)					
+      	            @VERB-FORM-3PL
+      	   	    @VPRES.
+
+Falem 		V * @(OPT-TRANS falar)
+          	    @(VIMP pl).
+
+
+perseguido 	V * @(TRANS perseguir)						"to chase"
+	   	    @PASTP
+	   	    @(PASTP-AGR sg masc).
+
+escrita 	V * { @(TRANS escrever) | @(DITRANS escrever)}			"to write"	
+	   	    @PASTP
+	   	    @(PASTP-AGR sg fem).
+
+decorou 	V * @(TRANS decorar)						"to decorate"
+      	  	    @VERB-FORM-3SG
+	  	    @VPAST.
+
+dorme  		V * @(INTRANS dormir)						"to sleep"
+          	    { @VERB-FORM-3SG
+	  	    @VPRES
+		    | @(VIMP sg) }.
+
+fala		V * @(OPT-TRANS falar)						"to speak"
+          	    { @VERB-FORM-3SG
+	  	    @VPRES
+		    | @(VIMP sg) }.
+
+espera 		V * @(OPT-TRANS esperar)					"to wait"
+          	    { @VERB-FORM-3SG
+	  	      @VPRES
+		    | @(VIMP sg) }.
+
+Espera 		V * @(OPT-TRANS esperar)			
+          	    { @VERB-FORM-3SG
+	  	      @VPRES
+		    | @(VIMP sg) }.
+
+Espero		V * @(OPT-TRANS esperar)
+		    @(VERB-FORM-1SG)
+		    @VPRES. 
+
+esperou 	V * @(OPT-TRANS esperar)
+      	  	    @VERB-FORM-3SG
+	  	    @VPAST.
+
+prepararam      V * @(OPT-TRANS preparar)					"to prepare"		
+               	    @(VERB-FORM-3PL)
+	       	    @VPAST.
+
+Prepararam      V * @(OPT-TRANS preparar)				
+               	    @(VERB-FORM-3PL)
+	       	    @VPAST.
+
+preparam        V * @(OPT-TRANS preparar)
+               	    @(VERB-FORM-3PL)
+	       	    @VPRES.
+		    
+Preparam        V * @(OPT-TRANS preparar)
+               	    { @(VERB-FORM-3PL)
+	       	      @VPRES
+		    | @(VIMP pl) }. 
+
+crescem 	V * @(INTRANS crescer)						"to grow"
+            	    @(VERB-FORM-3PL)
+	            @VPRES.
+
+dei		V * @(DITRANS dar)						"to give"
+          	    @VERB-FORM-1SG
+           	    @VPAST.
+
+Dei		V * @(DITRANS dar)						
+          	    @VERB-FORM-1SG
+           	    @VPAST.
+
+deste		V * @(DITRANS dar)
+          	    @VERB-FORM-2SG
+           	    @VPAST.
+
+deu		V * @(DITRANS dar)
+          	    @VERB-FORM-3SG
+           	    @VPAST.
+
+bebo	        V * @(OPT-TRANS beber)						"to drink"
+          	    @VERB-FORM-1SG
+          	    @VPRES.
+
+Bebo	        V * @(OPT-TRANS beber)						
+          	    @VERB-FORM-1SG
+          	    @VPRES.
+
+bebes	 	V * @(OPT-TRANS beber)						
+          	    @VERB-FORM-2SG
+          	    @VPRES.	    
+
+bebe 		V * @(OPT-TRANS beber)						
+          	    @VERB-FORM-3SG
+          	    @VPRES.
+
+bebemos 	V * @(OPT-TRANS beber)						
+          	    @VERB-FORM-1PL
+          	    @VPRES.
+
+bebem  		V * @(OPT-TRANS beber)						
+          	    @VERB-FORM-3PL
+          	    @VPRES.
+
+
+"COPULAR VERBS"
+sou		V *  @(COPULAR ser)						"to be (permanent traits/identity"
+		     @(VERB-FORM-1SG)
+		     @VPRES.
+
+és		V *  @(COPULAR ser)
+		     @(VERB-FORM-2SG)
+		     @VPRES.
+		     
+é     		V *  @(COPULAR ser)
+		     @(VERB-FORM-3SG)
+		     @VPRES.
+
+somos 		V *  @(COPULAR ser)
+		     @(VERB-FORM-1PL)
+		     @VPRES.
+
+são	  	V * @(COPULAR ser)				
+          	    @(VERB-FORM-3PL)
+	  	    @VPRES.
+
+estou 		V *  @(COPULAR estar)						"to be (temporary states/locations)"
+		     @(VERB-FORM-1SG)
+		     @VPRES.
+
+estás		V *  @(COPULAR estar)
+		     @(VERB-FORM-2SG)
+		     @VPRES.
+
+está	 	V *  @(COPULAR estar)
+		     @(VERB-FORM-3SG)
+		     @VPRES.
+
+esteve 		V *  @(COPULAR estar)
+		     @(VERB-FORM-3SG)
+		     @VPAST.
+
+estamos 	V *  @(COPULAR estar)
+		     @(VERB-FORM-1PL)
+		     @VPRES.
+
+estão		V *  @(COPULAR estar)
+		     @(VERB-FORM-3PL)
+		     @VPRES.
+		     
+
+"EMBEDDING VERBS"
+
+digo	   	V *  @(EMBEDDING dizer)						"to say"
+		     @(VERB-FORM-1SG)
+		     @VPRES.
+
+dizes 		V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-2SG)
+		     @VPRES.
+
+diz    		V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-3SG)
+		     @VPRES.
+
+dizemos		V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-1PL)
+		     @VPRES.
+
+dizem		V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-3PL)
+		     @VPRES.
+
+disse		V *  @(EMBEDDING dizer)
+		     { @(VERB-FORM-1SG) | @(VERB-FORM-3SG) }
+		     @VPAST.
+
+disseste	V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-2SG)
+		     @VPAST.
+
+Disseste	V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-2SG)
+		     @VPAST.
+
+dissemos	V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-1PL)
+		     @VPAST.
+
+disseram	V *  @(EMBEDDING dizer)
+		     @(VERB-FORM-3PL)
+		     @VPAST.
+
+penso		V *  @(EMBEDDING pensar)					"to think"
+		     @(VERB-FORM-1SG)
+		     @VPRES.
+
+pensas		V *  @(EMBEDDING pensar)
+		     @(VERB-FORM-2SG)
+		     @VPRES.
+
+pensa		V *  @(EMBEDDING pensar)
+		     @(VERB-FORM-3SG)
+		     @VPRES.
+		     
+pensamos	V *  @(EMBEDDING pensar)
+		     @(VERB-FORM-1PL)
+		     @VPRES.
+
+pensam		V *  @(EMBEDDING pensar)
+		     @(VERB-FORM-3PL)
+		     @VPRES.
+
+
+"AUXILARIES"
+
+
+fui		AUX * @(TENSE past)						"infintive 'ir' = to go"
+    	  	      @VERB-FORM-1SG.
+
+foste 		AUX * @(TENSE past)
+    	  	      @VERB-FORM-2SG.
+
+foi		AUX * @(TENSE past)
+    	  	      @VERB-FORM-3SG.
+
+fomos 		AUX * @(TENSE past)
+    	              @VERB-FORM-1PL.
+
+foram 		AUX * @(TENSE past)
+    	  	      @VERB-FORM-3PL.
+
+
+
+"DETERMINERS"
+
+O       D * (^ DEF) = +								"the (sg + masc)"
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+ 
+o       D * (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+
+Os      D * (^ DEF) = +								"the (pl + masc)"
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+os      D * (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+A	D * (^ DEF) = +								"the (sg + fem)"
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+a	D * (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+As	D * (^ DEF) = +								"the (pl + fem)"
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+as    	D * (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+Um      D * (^ DEF) = -								"a (sg + masc)"
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+
+um      D * (^ DEF) = -
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+
+Uns     D * (^ DEF) = -								"a (pl + masc)"
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+uns  	D * (^ DEF) = -
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+Uma	D * (^ DEF) = -								"a (sg + fem)"
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+uma	D * (^ DEF) = -
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+Umas	D * (^ DEF) = -								"a (pl + fem)"
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+umas  	D * (^ DEF) = -
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+
+
+"NOUNS"
+
+amigo         N * @(COUNT-NOUN amigo sg masc).					"friend"
+
+amigos        N * @(COUNT-NOUN amigo pl masc).
+
+amiga         N * @(COUNT-NOUN amiga sg fem).
+
+amigas        N * @(COUNT-NOUN amiga pl fem).
+
+tangerina    N * @(COUNT-NOUN tangerina sg fem).				"mandarin"	
+
+tangerinas   N * @(COUNT-NOUN tangerina pl fem).
+
+jardim 	     N * @(COUNT-NOUN jardim sg masc).					"garden"
+
+jardims	     N * @(COUNT-NOUN jardim pl masc).
+	   
+gelado	     N * @(COUNT-NOUN gelado sg masc).					"ice-cream"
+
+porta        N * @(COUNT-NOUN porta sg fem).					"door"
+
+professor    N * @(COUNT-NOUN professor sg masc).				"teacher"
+
+professora   N * @(COUNT-NOUN professora sg fem).				
+
+professoras  N * @(COUNT-NOUN professora pl fem).				
+
+professores  N * @(COUNT-NOUN professor pl masc).				
+
+gato         N * @(COUNT-NOUN gato sg masc).					"cat"
+
+gatos        N * @(COUNT-NOUN gato pl masc).
+
+rato         N * @(COUNT-NOUN rato sg masc).					"mouse"					
+
+bolo 	     N * @(COUNT-NOUN bolo sg masc).					"cake"
+
+filhos       N * @(COUNT-NOUN filhos pl masc).					"children/sons"
+
+irmão        N * @(COUNT-NOUN irmão sg masc).					"brother"
+
+carta 	     N * @(COUNT-NOUN carta sg fem).					"letter"					
+casa	     N * @(COUNT-NOUN casa sg fem).					"house"
+
+sala 	     N * @(COUNT-NOUN sala sg fem).					"living room"
+
+festa  	     N * @(COUNT-NOUN festa sg fem).					"party"
+
+jantar 	     N * @(COUNT-NOUN jantar sg masc).					"lunch"				
+
+legumes      N * @(COUNT-NOUN legume pl masc).					"vegetables"				
+
+treino       N * @(COUNT-NOUN treino sg masc).					"train"
+
+restaurante  N * @(COUNT-NOUN restaurante sg masc).				"restaurant"
+
+menino        N * @(COUNT-NOUN menino sg masc).					"boy"
+
+meninos       N * @(COUNT-NOUN menino pl masc).
+
+menina        N * @(COUNT-NOUN menina sg fem).					"girl"
+
+meninas       N * @(COUNT-NOUN menina pl fem).
+
+médico        N * @(COUNT-NOUN médico sg masc).					"doctor"
+
+parque        N * @(COUNT-NOUN parque sg masc).					"parc"
+
+escola        N * @(COUNT-NOUN escola sg fem).					"school"
+
+cidade        N * @(COUNT-NOUN cidade sg fem).					"city"
+
+museu         N * @(COUNT-NOUN museu sg masc).					"museum"
+
+livro         N * @(COUNT-NOUN livro sg masc).					"book"
+
+livros        N * @(COUNT-NOUN livro pl masc).
+
+maçã          N * @(COUNT-NOUN maçã sg fem).					"apple"
+
+maçãs         N * @(COUNT-NOUN maçã pl fem).
+
+pão           N * @(COUNT-NOUN pão sg masc).					"bread"
+
+pães          N * @(COUNT-NOUN pão pl masc).
+
+sopa          N * @(COUNT-NOUN sopa sg fem).					"soup"
+
+sopas         N * @(COUNT-NOUN sopa pl fem).
+
+café          N * @(COUNT-NOUN café sg masc).					"coffee"
+
+cafés         N * @(COUNT-NOUN café pl masc).
+
+vinho         N * @(COUNT-NOUN vinho sg masc).					"wine"
+
+vinhos        N * @(COUNT-NOUN vinho pl masc).
+
+mãe	      N * @(COUNT-NOUN mãe sg fem).					"mother"
+
+pai	      N * @(COUNT-NOUN pai sg masc).					"father"
+
+
+
+"ADJECTIVES"
+
+pequena    A * @(PRED pequena)							"small (sg + fem)"
+	       (^ NUM) = sg
+	       (^ GEN) = fem.
+
+pequeno    A * @(PRED pequeno)							"small (sg + masc)"
+	       (^ NUM) = sg
+	       (^ GEN) = masc.
+
+pequenas   A * @(PRED pequeno)							"small (pl + fem)"
+	       (^ NUM) = pl
+	       (^ GEN) = fem.
+	    
+pequenos   A * @(PRED pequeno)							"small (pl + masc)"
+	       (^ NUM) = pl
+	       (^ GEN) = masc.
+	   
+preto      A * @(PRED preto)							"black (sg + masc)"
+               (^ NUM) = sg
+	       (^ GEN) = masc.
+
+preta      A * @(PRED preto)							"black (sg + fem)"
+	       (^ NUM) = sg
+	       (^ GEN) = fem.
+
+baixo      A * @(PRED baixo)							"low (sg + masc)"
+       	       (^ NUM) = sg
+	       (^ GEN) = masc.
+
+vermelha   A * @(PRED vermelho)							"red (sg + fem)"
+	       (^ NUM) = sg
+	       (^ GEN) = fem.
+
+vermelhas  A * @(PRED vermelho)							"red (pl + fem)"
+	       (^ NUM) = pl
+	       (^ GEN) = fem.
+
+alto       A * @(PRED alto)							"high (sg + masc)"
+       	       (^ NUM) = sg
+	       (^ GEN) = masc.
+
+alta       A * @(PRED alto)							"high (sg + fem)"
+       	       (^ NUM) = sg
+	       (^ GEN) = fem.
+
+novo       A * @(PRED novo)							"new (sg + masc)"
+       	       (^ NUM) = sg
+	       (^ GEN) = masc.
+
+nova       A * @(PRED novo)							"new (fem + masc)"
+       	       (^ NUM) = sg
+	       (^ GEN) = fem.
+
+novos      A * @(PRED novo)							"new (pl + masc)"
+       	       (^ NUM) = pl
+	       (^ GEN) = masc.
+
+novas      A * @(PRED novo)							"low (pl + fem)"
+       	       (^ NUM) = pl
+	       (^ GEN) = fem.
+
+
+"ADVERBS"
+
+lentamente	ADV * @(PRED lentamente).					"slowly"
+
+rapidamente 	ADV * @(PRED rapidamente).					"quickly"
+
+cuidadosamente 	ADV * @(PRED cuidadosamente). 					"carefully"
+
+completamente   ADV * @(PRED completamente).					"completely"
+
+totalmente      ADV * @(PRED totalmente).					"totally"
+
+raramente       ADV * @(PRED raramente).					"rarely"
+
+normalmente     ADV * @(PRED normalmente).					"normally"
+
+imediatamente   ADV * @(PRED imediatamente).					"immediately"
+
+bem            	ADV * @(PRED bem).						"good"
+
+mal            	ADV * @(PRED mal).						"bad"
+
+muito           ADV * @(PRED muito).						"a lot"
+
+pouco           ADV * @(PRED pouco).						"a little"						
+
+
+
+"PREPOSITIONS"
+
+por     P * @(PREP por).							"through/by/for"
+
+pelo    P * @(PREP por).							"through/by/for + the (sg + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+	    
+pelos   P * @(PREP por)								"through/by/for + the (pl + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+pela    P * @(PREP por)								"through/by/for + the (sg + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+pelas   P * @(PREP por)								"through/by/for + the (pl + fem)"   
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+em  	P * @(PREP em)								"in/at"
+	    (^ PTYPE) = sem.							
+
+no      P * @(PREP em)								"in/at + the (sg + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+
+nos     P * @(PREP em)								"in/at + the (pl + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+na      P * @(PREP em)								"in/at + the (sg + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+nas     P * @(PREP em)								"in/at + the (pl + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+
+num     P * @(PREP em)								"in/at + a (sg + masc)"		
+	    (^ DEF) = -
+      	    (^ NUM) = sg
+	    (^ GEN) = masc.
+
+nuns    P * @(PREP em)								"in/at + a (pl + masc)"	
+	    (^ DEF) = -
+      	    (^ NUM) = pl
+	    (^ GEN) = masc.
+
+numa    P * @(PREP em)								"in/at + a (sg + fem)"	
+	    (^ DEF) = -
+      	    (^ NUM) = sg
+	    (^ GEN) = fem.
+
+numas   P * @(PREP em)								"in/at + a (pl + fem)"	    
+	    (^ DEF) = -
+      	    (^ NUM) = pl
+	    (^ GEN) = fem.
+	    
+de 	P * @(PREP de)								"from/of/about"
+	    (^ PTYPE) = nosem.
+	    
+do      P * @(PREP de)								"from/of/about + the (sg + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = masc
+	    (^ PTYPE) = nosem.
+
+dos      P * @(PREP de)								"from/of/about + the (pl + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = masc
+	    (^ PTYPE) = nosem.
+
+da      P * @(PREP de)								"from/of/about + the (sg + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = fem
+	    (^ PTYPE) = nosem.
+
+das      P * @(PREP de)								"from/of/about + the (pl + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = fem
+	    (^ PTYPE) = nosem.
+
+ao	P * @(PREP a)								"ton + the (sg + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = masc
+	    (^ PTYPE) = nosem.
+	    
+aos	P * @(PREP a)								"to + the (pl + masc)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = masc
+	    (^ PTYPE) = nosem.
+
+à	P * @(PREP a)								"to + the (sg + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = sg
+	    (^ GEN) = fem
+	    (^ PTYPE) = nosem.	
+
+às	P * @(PREP a)								"to + the (pl + fem)"
+	    (^ DEF) = +
+      	    (^ NUM) = pl
+	    (^ GEN) = fem
+	    (^ PTYPE) = nosem.
+
+
+
+para 	P * @(PREP para)							"to/for"
+	    (^ PTYPE) = nosem.
+
+com 	P * @(PREP com)								"with"
+	    (^ PTYPE) = sem.
+
+sobre   P * @(PREP sobre)							"about/on"
+	    (^ PTYPE) = sem.
+
+
+"NAMES" 
+
+João     N * @(NAME João)
+	     @DEF			"needs a DEF value; article is obligatory"
+	     (^ NUM) = sg
+	     (^ GEN) = masc.			
+
+Diogo    N * @(NAME Diogo)
+	     @DEF
+	     (^ NUM) = sg
+	     (^ GEN) = masc.
+
+Eduardo  N * @(NAME Eduardo)
+	     @DEF
+	     (^ NUM) = sg
+	     (^ GEN) = masc.
+
+Maria    N * @(NAME Maria)
+	     @DEF
+	     (^ NUM) = sg
+	     (^ GEN) = fem.
+
+Tiago	 N * @(NAME Tiago)
+	     @DEF
+	     (^ NUM) = sg
+	     (^ GEN) = masc.
+
+Ana      N * @(NAME Ana)
+	     @DEF
+	     (^ NUM) = sg
+	     (^ GEN) = fem.
+
+
+
+"CONJUCTIONS"
+
+e        CONJ * (^ COORD-FORM) = e;						"and"
+	 CONJnp * (^ COORD-FORM) = e
+		   (^ NUM) = pl.
+
+mas 	 CONJ * (^ COORD-FORM) = mas;						"but"
+ 	 CONJnp * (^ COORD-FORM) = mas
+		   (^ NUM) = pl.
+
+porque   CONJ * (^ COORD-FORM) = porque;					"because"
+	 CONJnp * (^ COORD-FORM) = porque
+		   (^ NUM) = pl.
+
+"NEGATION"
+
+não	NEG * @(PRED não)							"not"
+	      (^ ADJUNCT-TYPE) = neg.
+
+Não	NEG * @(PRED não)
+	      (^ ADJUNCT-TYPE) = neg.
+
+"COMPLEMENTIZER"
+
+que  C * (^COMP-FORM) = que.							"that"
+
+
+"PUNCTUATION"
+
+. PERIOD * (^ STMT-TYPE) = declarative. 
+
+, COMMA  * .			
+
+!  EXCL * (^ STMT-TYPE) = exclamation.
+
+----
