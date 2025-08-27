@@ -24,3 +24,14 @@ To run the grammar, you need an installation of XLE.
 - Run create-parser EPgrammar.lfg to load the grammar
 
 You can now parse the sentences from the test suite.
+
+## Citation
+
+The grammar is based on work within the ParGram project:
+ 
+Butt, Miriam, Helge Dyvik, Tracy Holloway King, Hiroshi Masuichi & Christian Rohrer. 2002. The parallel grammar project.
+
+If you use this repository, please cite:
+
+Coutinho Goncalves, Jennifer. 2025. EPgrammar-XLE: An XLE grammar fragment for European Portuguese. GitHub repository. Available at: https://github.com/jennifercoutinhogoncalves-ship-it/EPgrammar-XLE
+
