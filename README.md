@@ -8,6 +8,7 @@ This repository contains the XLE grammar fragment for European Portuguese develo
 - Template file
 - Test suite with grammatical and ungrammatical sentences
 - Test suite results
+- Test suite glossing
 
 ## Purpose
 
